@@ -1,3 +1,18 @@
 {
-    
+    "title": "-DESTROYED-",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "-DESTROYED-"
+        },
+        "description": {
+            "type": "string",
+            "description": "-DESTROYED-"
+        },
+        "image": {
+            "type": "string",
+            "description": "https://generik.luc.directory/destroyed/image.png"
+        }
+    }
 }

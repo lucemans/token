@@ -1,14 +1,31 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "./ERC721.sol";
+contract Contract {
+    /// @dev This emits when ownership of any NFT changes by any mechanism.
+    ///  This event emits when NFTs are created (`from` == 0) and destroyed
+    ///  (`to` == 0). Exception: during contract creation, any number of NFTs
+    ///  may be created and assigned without emitting Transfer. At the time of
+    ///  any transfer, the approved address for that NFT (if any) is reset to none.
+    event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
 
-contract Contract is ERC721, ERC721Metadata {
+    /// @dev This emits when the approved address for an NFT is changed or
+    ///  reaffirmed. The zero address indicates there is no approved address.
+    ///  When a Transfer event emits, this also indicates that the approved
+    ///  address for that NFT (if any) is reset to none.
+    event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+
+    /// @dev This emits when an operator is enabled or disabled for an owner.
+    ///  The operator can manage all NFTs of the owner.
+    event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
+
     address owner;
     string uri;
 
     constructor(string memory _uri) {
         uri = _uri;
+        owner = msg.sender;
+        emit Transfer(address(0), address(msg.sender), 1);
     }
 
     // Function to anihilate the token
@@ -28,12 +45,54 @@ contract Contract is ERC721, ERC721Metadata {
         return "GENERIK";
     }
 
+    function supportsInterface(bytes4 interfaceID)
+        external
+        view
+        returns (bool)
+    {
+        return
+            interfaceID == 0x80ac58cd ||
+            interfaceID == 0x5b5e139f ||
+            interfaceID == 0x01ffc9a7 ||
+            interfaceID == 0x780e9d63;
+    }
+
+    /// @notice Count NFTs tracked by this contract
+    /// @return A count of valid NFTs tracked by this contract, where each one of
+    ///  them has an assigned and queryable owner not equal to the zero address
+    function totalSupply() external view returns (uint256) {
+        return uint256(1);
+    }
+
+    /// @notice Enumerate valid NFTs
+    /// @dev Throws if `_index` >= `totalSupply()`.
+    /// @param _index A counter less than `totalSupply()`
+    /// @return The token identifier for the `_index`th NFT,
+    ///  (sort order not specified)
+    function tokenByIndex(uint256 _index) external view returns (uint256) {
+        require(_index == 0);
+        return uint256(1);
+    }
+
+    /// @notice Enumerate NFTs assigned to an owner
+    /// @dev Throws if `_index` >= `balanceOf(_owner)` or if
+    ///  `_owner` is the zero address, representing invalid NFTs.
+    /// @param _owner An address where we are interested in NFTs owned by them
+    /// @param _index A counter less than `balanceOf(_owner)`
+    /// @return The token identifier for the `_index`th NFT assigned to `_owner`,
+    ///   (sort order not specified)
+    function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256) {
+        require(_index == 0);
+        require(_owner == owner);
+        return uint256(1);
+    }
+
     /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
     /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
     ///  3986. The URI may point to a JSON file that conforms to the "ERC721
     ///  Metadata JSON Schema".
     function tokenURI(uint256 _tokenId) external view returns (string memory) {
-        require(_tokenId == 1);
+        require(_tokenId == uint256(1));
         return string(abi.encodePacked(uri, "1.json"));
     }
 
@@ -44,7 +103,7 @@ contract Contract is ERC721, ERC721Metadata {
     /// @return The number of NFTs owned by `_owner`, possibly zero
     function balanceOf(address _owner) external view returns (uint256) {
         require(_owner != address(0));
-        if (_owner == owner) return 1;
+        if (_owner == owner) return uint256(1);
         return 0;
     }
 
@@ -54,7 +113,7 @@ contract Contract is ERC721, ERC721Metadata {
     /// @param _tokenId The identifier for an NFT
     /// @return The address of the owner of the NFT
     function ownerOf(uint256 _tokenId) external view returns (address) {
-        require(_tokenId == 1);
+        require(_tokenId == uint256(1));
         return owner;
     }
 
