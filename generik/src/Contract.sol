@@ -33,6 +33,7 @@ contract Contract {
         require(msg.sender == owner);
         owner = address(0);
         uri = "https://generik.luc.directory/destroyed/";
+        emit Transfer(address(msg.sender), address(0), 1);
     }
 
     /// @notice A descriptive name for a collection of NFTs in this contract
