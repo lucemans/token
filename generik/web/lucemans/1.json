@@ -1,0 +1,18 @@
+{
+    "title": "Lucemans",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Luc"
+        },
+        "description": {
+            "type": "string",
+            "description": "Create Epic Shit"
+        },
+        "image": {
+            "type": "string",
+            "description": "https://generik.luc.directory/lucemans/image.png"
+        }
+    }
+}
