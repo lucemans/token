@@ -12,16 +12,16 @@ jobs:
       - uses: actions/checkout@v2
       - uses: vimtor/action-zip@v1
         with:
-          files: ${{ github.workspace }}/generic/web
-          dest: ${{ github.workspace }}/generic/result.zip
+          files: ${{ github.workspace }}/generik/web
+          dest: ${{ github.workspace }}/generik/result.zip
       - uses: actions/upload-artifact@v2
         with:
           name: my-artifact
-          path: ${{ github.workspace }}/generic/result.zip
+          path: ${{ github.workspace }}/generik/result.zip
       - name: Deploy Stage
         uses: fjogeleit/http-request-action@master
         with:
           url: 'https://signal.lvksh.cloud/deployments/push?site=987654335'
           method: 'PUT'
           bearerToken: ${{ secrets.SIGNAL_TOKEN }}
-          files: '{ "data": "${{ github.workspace }}/generic/result.zip" }'
+          files: '{ "data": "${{ github.workspace }}/generik/result.zip" }'
