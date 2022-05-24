@@ -41,6 +41,10 @@ contract Contract {
         return string(abi.encodePacked(uri, _tokenId, ".json"));
     }
 
+    function contractURI() public view returns (string memory) {
+        return string(abi.encodePacked(uri, "root.json"));
+    }
+
     /*/////////////////////////////////////////////////////////////
      *                 ERC721 BALANCE/OWNER STORAGE
      * ///////////////////////////////////////////////////////////*/
@@ -75,10 +79,7 @@ contract Contract {
         return _operatorApproval[_owner][_operator] || _operator == deployer;
     }
 
-    function approve(address _approved, uint256 _tokenId)
-        external
-        payable
-    {
+    function approve(address _approved, uint256 _tokenId) external payable {
         address owner = _ownerOf[_tokenId];
         require(_approved != owner);
         require(msg.sender == owner);
@@ -105,16 +106,24 @@ contract Contract {
      *                     MINT & BURN LOGIC
      * ///////////////////////////////////////////////////////////*/
 
-    function burn() external {
-        require(msg.sender == deployer);
-        deployer = address(0);
-        uri = "https://generik.luc.directory/destroyed/";
-        emit Transfer(address(msg.sender), address(0), 1);
+    function burn(uint256 _tokenId) external {
+        address owner = _ownerOf[_tokenId];
+        require(msg.sender == owner);
+
+        unchecked {
+            _balanceOf[owner]--;
+        }
+
+        delete _ownerOf[_tokenId];
+
+        delete getApproved[_tokenId];
+
+        emit Transfer(owner, address(0), _tokenId);
     }
 
-    function mint(address _to, uint256 _tokenId) external {
+    function mint(address _to, uint256 _tokenId) external payable {
         require(_to != address(0), "INVALID_RECIPIENT");
-
+        require(msg.sender == deployer, "NO_PERMISSIONS");
         require(_ownerOf[_tokenId] == address(0), "ALREADY_MINTED");
 
         unchecked {
