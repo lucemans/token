@@ -4,5 +4,10 @@
     "external_link": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "image": "https://dot.luc.directory/v1/69.png",
     "background_color": "ff69b4",
-    "attributes": []
+    "attributes": [
+        {
+            "trait_type": "Affilication",
+            "value": "DevTalk"
+        }
+    ]
 }
