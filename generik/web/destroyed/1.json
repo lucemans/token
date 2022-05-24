@@ -15,6 +15,9 @@
             "description": "https://generik.luc.directory/destroyed/image.png"
         }
     },
+    "image": "https://generik.luc.directory/destroyed/image.png",
+    "name": "-DESTROYED-",
+    "background_color": "ff69b4",
     "attributes": [
         {
             "trait_type": "Base",
