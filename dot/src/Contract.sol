@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.13;
 
 contract Contract {
@@ -28,16 +28,18 @@ contract Contract {
      *                    METADATA STORAGE/LOGIC
      * ///////////////////////////////////////////////////////////*/
 
-    string name = "Destroyers of TechTok";
+    string public name = "Destroyers of TechTok";
 
-    string symbol = "TECHTOK";
+    string public symbol = "TECHTOK";
+
+    uint256 public totalSupply = 0;
 
     string uri;
 
-    address deployer;
+    address public deployer;
 
-    function tokenURI(uint256 _tokenId) external view returns (string memory) {
-        require(_tokenId == uint256(1));
+    function tokenURI(uint256 _tokenId) public view returns (string memory) {
+        require(_ownerOf[_tokenId] != address(0));
         return string(abi.encodePacked(uri, _tokenId, ".json"));
     }
 
@@ -79,7 +81,7 @@ contract Contract {
         return _operatorApproval[_owner][_operator] || _operator == deployer;
     }
 
-    function approve(address _approved, uint256 _tokenId) external payable {
+    function approve(address _approved, uint256 _tokenId) external {
         address owner = _ownerOf[_tokenId];
         require(_approved != owner);
         require(msg.sender == owner);
@@ -112,6 +114,7 @@ contract Contract {
 
         unchecked {
             _balanceOf[owner]--;
+            totalSupply--;
         }
 
         delete _ownerOf[_tokenId];
@@ -128,6 +131,7 @@ contract Contract {
 
         unchecked {
             _balanceOf[_to]++;
+            totalSupply++;
         }
 
         _ownerOf[_tokenId] = _to;
@@ -154,24 +158,11 @@ contract Contract {
      *                       ERC721 LOGIC
      * ///////////////////////////////////////////////////////////*/
 
-    function safeTransferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId,
-        bytes calldata data
-    ) external payable {}
-
-    function safeTransferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId
-    ) external payable {}
-
     function transferFrom(
         address _from,
         address _to,
         uint256 _tokenId
-    ) external payable {
+    ) public {
         require(_from == _ownerOf[_tokenId], "WRONG_FROM");
 
         require(_to != address(0), "INVALID_RECIPIENT");
@@ -194,5 +185,49 @@ contract Contract {
         delete getApproved[_tokenId];
 
         emit Transfer(_from, _to, _tokenId);
+    }
+
+    function safeTransferFrom(
+        address _from,
+        address _to,
+        uint256 _tokenId,
+        bytes calldata data
+    ) public {
+        transferFrom(_from, _to, _tokenId);
+
+        require(
+            _to.code.length == 0 ||
+                ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, data) ==
+                ERC721TokenReceiver.onERC721Received.selector,
+            "UNSAFE_RECIPIENT"
+        );
+    }
+
+    function safeTransferFrom(
+        address _from,
+        address _to,
+        uint256 _tokenId
+    ) public {
+        transferFrom(_from, _to, _tokenId);
+
+        require(
+            _to.code.length == 0 ||
+                ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, "") ==
+                ERC721TokenReceiver.onERC721Received.selector,
+            "UNSAFE_RECIPIENT"
+        );
+    }
+}
+
+/// @notice A generic interface for a contract which properly accepts ERC721 tokens.
+/// @author Solmate (https://github.com/Rari-Capital/solmate/blob/main/src/tokens/ERC721.sol)
+abstract contract ERC721TokenReceiver {
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external virtual returns (bytes4) {
+        return ERC721TokenReceiver.onERC721Received.selector;
     }
 }
