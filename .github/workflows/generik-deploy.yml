@@ -10,18 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: vimtor/action-zip@v1
+      - name: Edgeserver Upload
+        uses: lvkdotsh/edgeserver-action@master
         with:
-          files: generik/web
-          dest: generik/result.zip
-      - uses: actions/upload-artifact@v2
-        with:
-          name: generik
-          path: ${{ github.workspace }}/generik/result.zip
-      - name: Deploy Stage
-        uses: fjogeleit/http-request-action@master
-        with:
-          url: 'https://signal.lvksh.cloud/deployments/push?site=987654335'
-          method: 'PUT'
-          bearerToken: ${{ secrets.SIGNAL_TOKEN }}
-          files: '{ "data": "${{ github.workspace }}/generik/result.zip" }'
+          app_id: "987654335"
+          server: https://api.edgeserver.io
+          token: ${{ secrets.SIGNAL_TOKEN }}
+          directory: generik/web

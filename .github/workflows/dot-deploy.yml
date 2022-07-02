@@ -10,18 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: vimtor/action-zip@v1
+      - name: Edgeserver Upload
+        uses: lvkdotsh/edgeserver-action@master
         with:
-          files: dot/web
-          dest: dot/result.zip
-      - uses: actions/upload-artifact@v2
-        with:
-          name: dot
-          path: ${{ github.workspace }}/dot/result.zip
-      - name: Deploy Stage
-        uses: fjogeleit/http-request-action@master
-        with:
-          url: 'https://signal.lvksh.cloud/deployments/push?site=987654336'
-          method: 'PUT'
-          bearerToken: ${{ secrets.SIGNAL_TOKEN }}
-          files: '{ "data": "${{ github.workspace }}/dot/result.zip" }'
+          app_id: "987654336"
+          server: https://api.edgeserver.io
+          token: ${{ secrets.SIGNAL_TOKEN }}
+          directory: dot/web
